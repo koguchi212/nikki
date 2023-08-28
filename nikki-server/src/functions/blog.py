@@ -3,7 +3,7 @@ from ..schemas import Blog
 from sqlalchemy.orm import Session
 from fastapi import status, HTTPException
 
-def get_all(db:Session):
+async def get_all(db:Session):
     """
     この関数はすべてのブログを取得します。
 
@@ -16,7 +16,7 @@ def get_all(db:Session):
     blogs=db.query(models.Blog).all()
     return blogs
 
-def create(blog: Blog,db:Session, current_user)->Blog:
+async def create(blog: Blog,db:Session, current_user)->Blog:
     """
     この関数は新しいブログを作成します。
 
@@ -36,7 +36,7 @@ def create(blog: Blog,db:Session, current_user)->Blog:
     db.refresh(new_blog)
     return new_blog    
 
-def destroy(id:int, db:Session)->str:
+async def destroy(id:int, db:Session)->str:
     """
     この関数はブログを削除します。
 
@@ -54,7 +54,7 @@ def destroy(id:int, db:Session)->str:
     db.commit()
     return 'done'
 
-def update(id:int, request:Blog, db:Session)->str:
+async def update(id:int, request:Blog, db:Session)->str:
     """
     この関数はブログを更新します。
 

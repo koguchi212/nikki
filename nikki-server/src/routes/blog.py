@@ -2,8 +2,8 @@ from typing import List
 from fastapi import Depends, APIRouter,status,HTTPException
 from ..schemas import Blog, ShowBlog,User
 from .. import models, oauth2
-from sqlalchemy.orm import Session
-from ..database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.database import get_db
 from ..functions import blog
 from src.log import get_logger
 
@@ -14,7 +14,7 @@ blog_logger = get_logger(category="BLOG")
 
 @router.get('/', response_model=List[ShowBlog])
 async def all_fetch(
-        db:Session=Depends(get_db), 
+        db:AsyncSession=Depends(get_db), 
         current_user:User=Depends(oauth2.get_current_user)
     ) -> List[ShowBlog]:
     """
@@ -26,7 +26,7 @@ async def all_fetch(
 @router.post('/',status_code=status.HTTP_201_CREATED)
 async def create(
         request: Blog,
-        db:Session=Depends(get_db),
+        db:AsyncSession=Depends(get_db),
         current_user:User=Depends(oauth2.get_current_user),
     ) -> ShowBlog:
     """
@@ -40,7 +40,7 @@ async def create(
 @router.get('/{id}',status_code=status.HTTP_200_OK,response_model=ShowBlog)
 async def show(
         id:int,
-        db:Session=Depends(get_db),
+        db:AsyncSession=Depends(get_db),
     ) -> ShowBlog:
     """
     # この関数はidでブログを取得します。
@@ -55,7 +55,7 @@ async def show(
 @router.delete('/{id}',status_code=status.HTTP_204_NO_CONTENT)
 async def delete(
         id:int,
-        db:Session=Depends(get_db)
+        db:AsyncSession=Depends(get_db)
     ) -> None:
     """
     # この関数はidでブログを削除します。
@@ -67,7 +67,7 @@ async def delete(
 async def update(
         id,
         request:Blog,
-        db:Session=Depends(get_db)
+        db:AsyncSession=Depends(get_db)
     ) -> ShowBlog:
     """
     # この関数はidでブログを更新します。

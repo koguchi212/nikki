@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter,status
 from ..schemas import User,ShowUser
-from sqlalchemy.orm import Session
-from ..database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.database import get_db
 from ..functions import user
 from src.log import get_logger
 
@@ -14,7 +14,7 @@ user_logger = get_logger(category="USER")
 @router.post('/')
 async def create_user(
         request:User,
-        db:Session=Depends(get_db)
+        db:AsyncSession=Depends(get_db)
     ) -> ShowUser:
     """
     # この関数はユーザーを作成します。
@@ -25,7 +25,7 @@ async def create_user(
 @router.get('/{id}',response_model=ShowUser)
 async def get_user(
         id:int, 
-        db:Session=Depends(get_db)
+        db:AsyncSession=Depends(get_db)
     ) -> ShowUser:
     """
     # この関数はidでユーザーを取得します。
@@ -38,7 +38,7 @@ async def get_user(
 @router.delete('/{id}',status_code=status.HTTP_204_NO_CONTENT)
 async def delete(
         id:int,
-        db:Session=Depends(get_db)
+        db:AsyncSession=Depends(get_db)
     ) -> None:
     """
     # この関数はidでユーザーを削除します。

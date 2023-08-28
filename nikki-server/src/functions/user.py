@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..hashing import Hash
 
 
-def create(request:User,db:Session)->User:
+async def create(request:User,db:Session)->User:
     """
     この関数は新しいユーザーを作成します。
 
@@ -22,7 +22,7 @@ def create(request:User,db:Session)->User:
     db.refresh(new_user)
     return new_user
 
-def show(id:int, db:Session)->User:
+async def show(id:int, db:Session)->User:
     """
     この関数はユーザーを表示します。
 
@@ -41,7 +41,7 @@ def show(id:int, db:Session)->User:
 
 
 
-def destroy(id:int, db:Session)->str:
+async def destroy(id:int, db:Session)->str:
     """
     この関数はユーザーを削除します。
 
