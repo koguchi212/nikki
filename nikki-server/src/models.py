@@ -18,11 +18,11 @@ class User(Base):
     """
     __tablename__="users"
     id=Column(Integer,primary_key=True,index=True)
-    name=Column(String)
-    email=Column(String)
-    password=Column(String)
+    name=Column(String(100))
+    email=Column(String(100))
+    password=Column(String(100))
     
-    blogs=relationship('Blog',back_populates='creator')
+    blogs=relationship('Blog',back_populates='creator',lazy='joined')
     
 class Blog(Base):
     """ブログテーブル
@@ -39,8 +39,8 @@ class Blog(Base):
     """
     __tablename__="blogs"
     id=Column(Integer,primary_key=True,index=True)
-    title=Column(String)
-    body=Column(String)
+    title=Column(String(100))
+    body=Column(String(1024))
     user_id=Column(Integer,ForeignKey('users.id'))
 
-    creator=relationship('User',back_populates='blogs')
+    creator=relationship('User',back_populates='blogs',lazy='joined')

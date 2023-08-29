@@ -1,9 +1,9 @@
 from .. import models
 from ..schemas import Blog
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import status, HTTPException
 
-async def get_all(db:Session):
+async def get_all(db:AsyncSession):
     """
     この関数はすべてのブログを取得します。
 
@@ -16,7 +16,7 @@ async def get_all(db:Session):
     blogs=db.query(models.Blog).all()
     return blogs
 
-async def create(blog: Blog,db:Session, current_user)->Blog:
+async def create(blog: Blog,db:AsyncSession, current_user)->Blog:
     """
     この関数は新しいブログを作成します。
 
@@ -32,11 +32,11 @@ async def create(blog: Blog,db:Session, current_user)->Blog:
     user_id=user_id[0].id
     new_blog=models.Blog(title=blog.title,body=blog.body,user_id=user_id)
     db.add(new_blog)
-    db.commit()
-    db.refresh(new_blog)
+    await db.commit()
+    await db.refresh(new_blog)
     return new_blog    
 
-async def destroy(id:int, db:Session)->str:
+async def destroy(id:int, db:AsyncSession)->str:
     """
     この関数はブログを削除します。
 
@@ -51,10 +51,10 @@ async def destroy(id:int, db:Session)->str:
     if not blog.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Blog with the id {id} is not found')
     blog.delete(synchronize_session=False)
-    db.commit()
+    await db.commit()
     return 'done'
 
-async def update(id:int, request:Blog, db:Session)->str:
+async def update(id:int, request:Blog, db:AsyncSession)->str:
     """
     この関数はブログを更新します。
 
@@ -70,5 +70,5 @@ async def update(id:int, request:Blog, db:Session)->str:
     if not blog.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not found')
     blog.update(request.dict())
-    db.commit()
+    await db.commit()
     return 'updated'

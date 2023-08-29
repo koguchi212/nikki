@@ -1,11 +1,11 @@
 from fastapi import  status,HTTPException
 from ..schemas import User
 from .. import models
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from ..hashing import Hash
 
 
-async def create(request:User,db:Session)->User:
+async def create(request:User,db:AsyncSession)->User:
     """
     この関数は新しいユーザーを作成します。
 
@@ -18,11 +18,11 @@ async def create(request:User,db:Session)->User:
     """
     new_user=models.User(name=request.name,email=request.email,password=Hash.bcrypt(request.password))
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    await db.commit()
+    await db.refresh(new_user)
     return new_user
 
-async def show(id:int, db:Session)->User:
+async def show(id:int, db:AsyncSession)->User:
     """
     この関数はユーザーを表示します。
 
@@ -41,7 +41,7 @@ async def show(id:int, db:Session)->User:
 
 
 
-async def destroy(id:int, db:Session)->str:
+async def destroy(id:int, db:AsyncSession)->str:
     """
     この関数はユーザーを削除します。
 
@@ -56,5 +56,5 @@ async def destroy(id:int, db:Session)->str:
     if not user.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Blog with the id {id} is not found')
     user.delete(synchronize_session=False)
-    db.commit()
+    await db.commit()
     return 'done'

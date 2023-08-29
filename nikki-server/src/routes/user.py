@@ -20,7 +20,7 @@ async def create_user(
     # この関数はユーザーを作成します。
     """
     user_logger.info("Create user!")
-    return user.create(request,db)
+    return await user.create(request,db)
 
 @router.get('/{id}',response_model=ShowUser)
 async def get_user(
@@ -31,7 +31,7 @@ async def get_user(
     # この関数はidでユーザーを取得します。
     """
     user_logger.info(f"Fetching user with id: {id}")
-    return user.show(id,db)
+    return await user.show(id,db)
 
 
 
@@ -44,5 +44,5 @@ async def delete(
     # この関数はidでユーザーを削除します。
     """
     user_logger.info(f"Deleting user with id: {id}")
-    return user.destroy(id, db)
+    return await user.destroy(id, db)
 

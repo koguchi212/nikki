@@ -21,7 +21,7 @@ async def all_fetch(
     # この関数はすべてのブログを取得します。
     """
     blog_logger.info("Get all blogs!")
-    return blog.get_all(db)    
+    return await blog.get_all(db)    
 
 @router.post('/',status_code=status.HTTP_201_CREATED)
 async def create(
@@ -33,7 +33,7 @@ async def create(
     # この関数はブログを作成します。
     """
     blog_logger.info("Create blog!")
-    return blog.create(request,db,current_user)
+    return await blog.create(request,db,current_user)
 
 
 
@@ -61,7 +61,7 @@ async def delete(
     # この関数はidでブログを削除します。
     """
     blog_logger.info(f"Deleting blog with id: {id}")
-    return blog.destroy(id, db)
+    return await blog.destroy(id, db)
 
 @router.put('/{id}',status_code=status.HTTP_202_ACCEPTED)
 async def update(
@@ -73,7 +73,7 @@ async def update(
     # この関数はidでブログを更新します。
     """
     blog_logger.info(f"Updating blog with id: {id}")
-    return blog.update(id, request, db)
+    return await blog.update(id, request, db)
 
 
 
