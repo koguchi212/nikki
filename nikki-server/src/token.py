@@ -33,7 +33,7 @@ def create_access_token(data:dict, expires_delta:Optional[timedelta]=None)->str:
     encoded_jwt=jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt        
 
-def verify_token(token:str, credentials_exception, db:AsyncSession)->TokenData:
+async def verify_token(token:str, credentials_exception, db:AsyncSession)->TokenData:
     """
     JSON Web Token (JWT) を検証し、ユーザー情報を取得します。
 

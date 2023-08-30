@@ -1,6 +1,7 @@
 from .. import models
 from ..schemas import Blog
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from fastapi import status, HTTPException
 
 async def get_all(db:AsyncSession):
@@ -13,7 +14,10 @@ async def get_all(db:AsyncSession):
     Returns:
         [List]: これはすべてのブログを返します。
     """
-    blogs=db.query(models.Blog).all()
+    result = await db.execute(
+        select(models.Blog)
+        )
+    blogs = result.scalars().all()
     return blogs
 
 async def get_by_id(id:int, db:AsyncSession):
@@ -27,7 +31,10 @@ async def get_by_id(id:int, db:AsyncSession):
     Returns:
         [Blog]: これはブログを返します。
     """
-    blog=db.query(models.Blog).filter(models.Blog.id==id).first()
+    result = await db.execute(
+        select(models.Blog).where(models.Blog.id==id)
+        )
+    blog = result.scalar()
     if not blog:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not available')
         
@@ -46,8 +53,9 @@ async def create(blog: Blog,db:AsyncSession, current_user)->Blog:
     Returns:
         [Blog]: これは新しいブログを返します。
     """
-    user_id=[d for d in current_user]
-    user_id=user_id[0].id
+    current_user = await current_user
+    user_id = [d for d in current_user]
+    user_id = user_id[0].id
     new_blog=models.Blog(title=blog.title,body=blog.body,user_id=user_id)
     db.add(new_blog)
     await db.commit()
@@ -65,7 +73,10 @@ async def destroy(id:int, db:AsyncSession)->str:
     Returns:
         [str]: これは削除されたことを示します。
     """
-    blog=db.query(models.Blog).filter(models.Blog.id==id)
+    result = await db.execute(
+        select(models.Blog).where(models.Blog.id==id)
+        )
+    blog = result.scalar()
     if not blog.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Blog with the id {id} is not found')
     blog.delete(synchronize_session=False)
@@ -84,7 +95,10 @@ async def update(id:int, request:Blog, db:AsyncSession)->str:
     Returns:
         [str]: これは更新されたことを示します。
     """
-    blog=db.query(models.Blog).filter(models.Blog.id==id)
+    result = await db.execute(
+        select(models.Blog).where(models.Blog.id==id)
+        )
+    blog = result.scalar()
     if not blog.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not found')
     blog.update(request.dict())

@@ -2,6 +2,7 @@ from fastapi import  status,HTTPException
 from ..schemas import User
 from .. import models
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from ..hashing import Hash
 
 
@@ -33,7 +34,10 @@ async def show(id:int, db:AsyncSession)->User:
         [User]: これはユーザーを返します。
 
     """
-    user=db.query(models.User).filter(models.User.id==id).first()
+    result = await db.execute(
+        select(models.User).where(models.User.id==id)
+        )
+    user = result.scalar()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'User with the id {id} is not available')
         
@@ -52,7 +56,10 @@ async def destroy(id:int, db:AsyncSession)->str:
         [str]: これは削除されたことを示します。
 
     """
-    user=db.query(models.User).filter(models.User.id==id)
+    result = await db.execute(
+        select(models.User).where(models.User.id==id)
+        )
+    user = result.scalar()
     if not user.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Blog with the id {id} is not found')
     user.delete(synchronize_session=False)
