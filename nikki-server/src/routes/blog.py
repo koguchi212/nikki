@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Depends, APIRouter,status,HTTPException
+from fastapi import Depends, APIRouter,status
 from ..schemas import Blog, ShowBlog,User
 from .. import models, oauth2
 from sqlalchemy.ext.asyncio import AsyncSession

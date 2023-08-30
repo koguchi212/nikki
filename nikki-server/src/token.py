@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from .schemas import TokenData
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from .functions.user import show
 
 #環境変数を読み込む
@@ -33,7 +33,7 @@ def create_access_token(data:dict, expires_delta:Optional[timedelta]=None)->str:
     encoded_jwt=jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt        
 
-async def verify_token(token:str, credentials_exception, db:AsyncSession)->TokenData:
+def verify_token(token:str, credentials_exception, db:Session)->TokenData:
     """
     JSON Web Token (JWT) を検証し、ユーザー情報を取得します。
 
@@ -72,5 +72,5 @@ async def verify_token(token:str, credentials_exception, db:AsyncSession)->Token
         token_data=TokenData(email=email)    
     except JWTError:
         raise credentials_exception
-    user=show(id, db)
+    user = show(id, db)
     return user    

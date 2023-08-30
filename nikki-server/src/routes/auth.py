@@ -17,15 +17,10 @@ router=APIRouter(
 
 @router.post('/login')
 async def login(request:OAuth2PasswordRequestForm=Depends(), db:AsyncSession=Depends(get_db)):
-    async with db as session:  # 非同期セッションを直接使用
-        # クエリを作成
-        stmt = select(models.User).filter(models.User.email == request.username)
-
-        # クエリを実行し、結果を取得
-        result = await session.execute(stmt)
-
-        # ユーザーを取得
-        user = result.scalar()
+    result = await db.execute(
+        select(models.User).where(models.User.email==request.username)
+        )
+    user = result.scalar()
     if not user:
         auth_logger.info(f'emailの認証情報が無効です: {request.username}')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Invalid Credentials')

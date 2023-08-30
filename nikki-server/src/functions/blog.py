@@ -53,13 +53,12 @@ async def create(blog: Blog,db:AsyncSession, current_user)->Blog:
     Returns:
         [Blog]: これは新しいブログを返します。
     """
-    current_user = await current_user
     user_id = [d for d in current_user]
-    user_id = user_id[0].id
+    user_id = user_id[0]
     new_blog=models.Blog(title=blog.title,body=blog.body,user_id=user_id)
     db.add(new_blog)
-    await db.commit()
-    await db.refresh(new_blog)
+    db.commit()
+    db.refresh(new_blog)
     return new_blog    
 
 async def destroy(id:int, db:AsyncSession)->str:

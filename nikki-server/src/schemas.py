@@ -28,7 +28,7 @@ class ShowUser(BaseModel):
 class ShowBlog(BaseModel):
     title:str = Field(..., title="ブログのタイトル")
     body:str = Field(..., title="ブログの本文")
-    creator:ShowUser 
+    
 
     class Config:
         orm_mode=True
