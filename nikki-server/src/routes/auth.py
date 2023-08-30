@@ -3,8 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from .. import models, token
 from src.database import get_db
 from .. hashing import verify_password
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from sqlalchemy.orm import Session
 from src.log import get_logger
 
 
@@ -16,11 +15,8 @@ router=APIRouter(
 )
 
 @router.post('/login')
-async def login(request:OAuth2PasswordRequestForm=Depends(), db:AsyncSession=Depends(get_db)):
-    result = await db.execute(
-        select(models.User).where(models.User.email==request.username)
-        )
-    user = result.scalar()
+async def login(request:OAuth2PasswordRequestForm=Depends(), db:Session=Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email==request.username).first()
     if not user:
         auth_logger.info(f'emailの認証情報が無効です: {request.username}')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Invalid Credentials')

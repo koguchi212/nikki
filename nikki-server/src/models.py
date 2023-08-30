@@ -22,7 +22,7 @@ class User(Base):
     email=Column(String(100))
     password=Column(String(100))
     
-    blogs=relationship('Blog',back_populates='creator',lazy='joined')
+    blogs=relationship('Blog',back_populates='creator')
     
 class Blog(Base):
     """ブログテーブル
@@ -43,4 +43,4 @@ class Blog(Base):
     body=Column(String(1024))
     user_id=Column(Integer,ForeignKey('users.id'))
 
-    creator=relationship('User',back_populates='blogs',lazy='joined')
+    creator=relationship('User',back_populates='blogs')
