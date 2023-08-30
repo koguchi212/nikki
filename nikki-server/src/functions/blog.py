@@ -16,6 +16,24 @@ async def get_all(db:AsyncSession):
     blogs=db.query(models.Blog).all()
     return blogs
 
+async def get_by_id(id:int, db:AsyncSession):
+    """
+    この関数はidでブログを取得します。
+
+    Args:
+        id (int): これはブログのIDです。
+        db (Session): これはデータベースのセッションです。
+
+    Returns:
+        [Blog]: これはブログを返します。
+    """
+    blog=db.query(models.Blog).filter(models.Blog.id==id).first()
+    if not blog:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not available')
+        
+    return blog
+
+
 async def create(blog: Blog,db:AsyncSession, current_user)->Blog:
     """
     この関数は新しいブログを作成します。

@@ -46,11 +46,9 @@ async def show(
     # この関数はidでブログを取得します。
     """
     blog_logger.info(f"Fetching blog with id: {id}")
-    blog=db.query(models.Blog).filter(models.Blog.id==id).first()
-    if not blog:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not available')
+
+    return await blog.get_by_id(id, db)
         
-    return blog
 
 @router.delete('/{id}',status_code=status.HTTP_204_NO_CONTENT)
 async def delete(
