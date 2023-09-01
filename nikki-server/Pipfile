@@ -25,3 +25,4 @@ python_version = "3.10"
 
 [scripts]
 start = "uvicorn src.main:app --reload"
+create_tables = "docker-compose exec demo-app poetry run python -m src.database.migrate_db"
