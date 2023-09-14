@@ -1,33 +1,72 @@
+import os
+import dotenv
 import pytest
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
-
-from src.database import get_db, Base
+import sqlalchemy
+from src.models import Base
 from src.main import app
+from src.database import get_db
+from src.log import get_test_logger, get_logger
 
-ASYNC_DB_URL = "sqlite+aiosqlite:///:memory:"
+#環境変数を読み込む
+dotenv.load_dotenv(override=True)
 
-@pytest.fixture
-async def async_client() -> AsyncClient:
-    # Async用のengineとsessionを作成
-    async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
-    async_session = sessionmaker(
-        autocommit=False, autoflush=False, bind=async_engine, class_=AsyncSession
-    )
 
-    # テスト用にオンメモリのSQLiteテーブルを初期化（関数ごとにリセット）
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+#DBのURL要素を環境変数から取得する
+DB_PORT=os.environ.get('DB_PORT')
 
-    # DIを使ってFastAPIのDBの向き先をテスト用DBに変更
-    async def get_test_db():
-        async with async_session() as session:
-            yield session
+#DBのURLを作成する
+if DB_PORT:
+    SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://root@db:{DB_PORT}/test_demo?charset=utf8"
+else:
+    raise ValueError("DB_PORT must be set in environment variables.")
 
-    app.dependency_overrides[get_db] = get_test_db
+test_engine = sqlalchemy.create_engine(url=SQLALCHEMY_DATABASE_URL)
+TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
-    # テスト用に非同期HTTPクライアントを返却
-    async with AsyncClient(app=app, base_url="http://test") as client:
+@pytest.fixture(scope="function", autouse=True)
+def db() -> Session:
+    """
+    テスト用のDBを返却する
+
+    Yields:
+        Session: テスト用のDB
+    """
+    try:
+        db = TestSessionLocal()
+        Base.metadata.drop_all(bind=test_engine)
+        Base.metadata.create_all(bind=test_engine)
+        yield db
+    finally:
+        db.close()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def client() -> TestClient:
+    """
+    テスト用のクライアントを返却する
+
+   Yields:
+        TestClient: テスト用のクライアント
+    """
+    app.dependency_overrides[get_db] = lambda: db
+    with TestClient(app) as client:
         yield client
+    
+
+@pytest.fixture(scope="function", autouse=True)
+def logger() -> get_logger:
+    """
+    テスト用のログを返却する
+
+    Yields:
+        get_logger: テスト用のログ
+     """
+    app.dependency_overrides[get_logger] = lambda: get_test_logger
+    yield logger
+
+
+
+

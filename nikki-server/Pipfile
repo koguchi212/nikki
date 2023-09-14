@@ -19,6 +19,7 @@ aiomysql = "*"
 poetry = "*"
 
 [dev-packages]
+fire = "*"
 
 [requires]
 python_version = "3.10"
@@ -26,3 +27,4 @@ python_version = "3.10"
 [scripts]
 start = "uvicorn src.main:app --reload"
 create_tables = "docker-compose exec demo-app poetry run python -m src.database.migrate_db"
+seed = "docker-compose exec demo-app poetry run python -m src.database.seed"
