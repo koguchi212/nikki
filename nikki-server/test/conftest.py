@@ -1,5 +1,3 @@
-import os
-import dotenv
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -9,21 +7,10 @@ from src.models import Base
 from src.main import app
 from src.database import get_db
 from src.log import get_test_logger, get_logger
+from src.database.seeding import seeding_to_blog, seeding_to_user
 
-#環境変数を読み込む
-dotenv.load_dotenv(override=True)
-
-
-#DBのURL要素を環境変数から取得する
-DB_PORT=os.environ.get('DB_PORT')
-
-#DBのURLを作成する
-if DB_PORT:
-    SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://root@db:{DB_PORT}/test_demo?charset=utf8"
-else:
-    raise ValueError("DB_PORT must be set in environment variables.")
-
-test_engine = sqlalchemy.create_engine(url=SQLALCHEMY_DATABASE_URL)
+test_db_url = 'sqlite:///nikki_test.sqlite3'
+test_engine = sqlalchemy.create_engine(test_db_url, connect_args={"check_same_thread": False})
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 @pytest.fixture(scope="function", autouse=True)
@@ -54,7 +41,18 @@ def client() -> TestClient:
     app.dependency_overrides[get_db] = lambda: db
     with TestClient(app) as client:
         yield client
-    
+
+
+@pytest.fixture(scope="function", autouse=True)
+def seeding() -> None:
+    """
+    テスト用のDBにデータを投入する
+    """
+    seeding_to_user(test_engine)
+    seeding_to_blog(test_engine)
+
+
+
 
 @pytest.fixture(scope="function", autouse=True)
 def logger() -> get_logger:

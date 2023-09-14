@@ -10,7 +10,7 @@ def test_IDでブログを返す():
     with Session(bind=engine, autocommit=False, autoflush=False) as db:
         result = blog.get_by_id(id=1,db=db)
         assert result.title == "test_title1"
-        assert result.body == "test_body1"
+        assert result.body == "test_content1"
         assert result.user_id == 1
 
 
