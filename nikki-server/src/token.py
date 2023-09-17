@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from .schemas import TokenData
 from sqlalchemy.orm import Session
-from .functions.user import show
+from .crud.user import show
 
 #環境変数を読み込む
 dotenv.load_dotenv(override=True)

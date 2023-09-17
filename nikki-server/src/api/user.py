@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter,status
 from ..schemas import User,ShowUser
 from sqlalchemy.orm import Session
 from src.database import get_db
-from ..functions import user
+from ..crud import user
 from src.log import get_logger
 
 router=APIRouter(prefix='/user',tags=['users'])

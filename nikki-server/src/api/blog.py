@@ -4,7 +4,7 @@ from ..schemas import Blog, ShowBlog,User
 from .. import models, oauth2
 from sqlalchemy.orm import Session
 from src.database import get_db
-from ..functions import blog
+from ..crud import blog
 from src.log import get_logger
 
 router=APIRouter(prefix='/blog',tags=['blogs'])

@@ -36,8 +36,8 @@ def show(id:int, db:Session)->User:
     user = db.query(models.User).filter(models.User.id==id).first()
     print('user')
     print(user)
-    # if not user:
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'User with the id {id} is not available')
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'User with the id {id} is not available')
         
     return user
 

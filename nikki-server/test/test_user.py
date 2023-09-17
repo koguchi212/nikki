@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.functions import user 
+from src.crud import user 
 from src.database import engine
 
 

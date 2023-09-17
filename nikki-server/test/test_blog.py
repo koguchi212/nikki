@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.functions import blog
+from src.crud import blog
 from src.database import engine
 from src.schemas import Blog
 

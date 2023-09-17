@@ -30,8 +30,8 @@ def get_by_id(id:int, db:Session):
         [Blog]: これはブログを返します。
     """
     blog = db.query(models.Blog).filter(models.Blog.id==id).first()
-    # if not blog:
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not available')
+    if not blog:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not available')
         
     return blog
 
@@ -68,8 +68,8 @@ def destroy(id:int, db:Session)->str:
         [str]: これは削除されたことを示します。
     """
     blog = db.query(models.Blog).filter(models.Blog.id==id)
-    # if not blog.first():
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Blog with the id {id} is not found')
+    if not blog.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Blog with the id {id} is not found')
     blog.delete(synchronize_session=False)
     db.commit()
     return 'done'
@@ -87,8 +87,8 @@ def update(id:int, request:Blog, db:Session)->str:
         [str]: これは更新されたことを示します。
     """
     blog = db.query(models.Blog).filter(models.Blog.id==id)
-    # if not blog.first():
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not found')
+    if not blog.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'Blog with the id {id} is not found')
     blog.update(request.dict())
     db.commit()
     return 'updated'
