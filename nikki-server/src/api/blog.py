@@ -4,7 +4,7 @@ from ..schemas import Blog, ShowBlog,User
 from .. import models, oauth2
 from sqlalchemy.orm import Session
 from src.database import get_db
-from ..crud import blog
+from src import crud
 from src.log import get_logger
 
 router=APIRouter(prefix='/blog',tags=['blogs'])
@@ -21,7 +21,7 @@ async def all_fetch(
     # この関数はすべてのブログを取得します。
     """
     blog_logger.info("Get all blogs!")
-    return blog.get_all(db, current_user)    
+    return crud.get_all_blog(db, current_user)    
 
 @router.post('/',status_code=status.HTTP_201_CREATED)
 async def create(
@@ -33,7 +33,7 @@ async def create(
     # この関数はブログを作成します。
     """
     blog_logger.info("Create blog!")
-    return blog.create(request,db,current_user)
+    return crud.create_blog(request,db,current_user)
 
 
 
@@ -47,7 +47,7 @@ async def show(
     """
     blog_logger.info(f"Fetching blog with id: {id}")
 
-    return blog.get_by_id(id, db)
+    return crud.get_blog_by_id(id, db)
         
 
 @router.delete('/{id}',status_code=status.HTTP_204_NO_CONTENT)
@@ -59,7 +59,7 @@ async def delete(
     # この関数はidでブログを削除します。
     """
     blog_logger.info(f"Deleting blog with id: {id}")
-    return blog.destroy(id, db)
+    return crud.delete_blog(id, db)
 
 @router.put('/{id}',status_code=status.HTTP_202_ACCEPTED)
 async def update(
@@ -71,7 +71,7 @@ async def update(
     # この関数はidでブログを更新します。
     """
     blog_logger.info(f"Updating blog with id: {id}")
-    return blog.update(id, request, db)
+    return crud.update_blog(id, request, db)
 
 
 

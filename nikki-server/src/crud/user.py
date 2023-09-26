@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..hashing import Hash
 
 
-def create(request:User,db:Session)->User:
+def create_user(request:User,db:Session)->User:
     """
     この関数は新しいユーザーを作成します。
 
@@ -22,7 +22,7 @@ def create(request:User,db:Session)->User:
     db.refresh(new_user)
     return new_user
 
-def show(id:int, db:Session)->User:
+def show_user(id:int, db:Session)->User:
     """
     この関数はユーザーを表示します。
 
@@ -34,8 +34,6 @@ def show(id:int, db:Session)->User:
 
     """
     user = db.query(models.User).filter(models.User.id==id).first()
-    print('user')
-    print(user)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'User with the id {id} is not available')
         
@@ -43,7 +41,7 @@ def show(id:int, db:Session)->User:
 
 
 
-def destroy(id:int, db:Session)->str:
+def delete_user(id:int, db:Session)->str:
     """
     この関数はユーザーを削除します。
 

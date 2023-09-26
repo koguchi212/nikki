@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from .schemas import TokenData
 from sqlalchemy.orm import Session
-from .crud.user import show
+from .crud.user import show_user
 
 #環境変数を読み込む
 dotenv.load_dotenv(override=True)
@@ -72,5 +72,5 @@ def verify_token(token:str, credentials_exception, db:Session)->TokenData:
         token_data=TokenData(email=email)    
     except JWTError:
         raise credentials_exception
-    user = show(id, db)
+    user = show_user(id, db)
     return user    
